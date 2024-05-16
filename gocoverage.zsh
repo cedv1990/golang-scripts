@@ -11,6 +11,17 @@
 function gocoverage() {
     local coverage=80
 
+    local RED='\033[0;31m'
+    local YELLOW='\033[0;33m'
+    local BLUE='\033[0;34m'
+    local PURPLE='\033[0;35m'
+    local GREEN='\033[0;32m'
+    local CYAN='\033[0;36m'
+
+    local BOLD='\033[1m'
+    local UNDERLINE='\033[4m'
+    local RESET='\033[0m'
+
     # Parsear los argumentos de la línea de comandos
     while getopts ":c:" opt; do
         case $opt in
@@ -34,19 +45,33 @@ function gocoverage() {
 
     file_name="coverage_${current_date}.out"
 
-    go test -cover -coverprofile $file_name -race -count=1 ./...
+    if ! go test -cover -coverprofile $file_name -race -count=1 ./...; then
+        echo "${RED}There are errors in the tests and coverage could not be evaluated. Fix the tests and try again."
 
-    echo "Code Coverage Review"
-    echo "Threshold target: $coverage %"
+        rm -r $file_name
+
+        return 1
+    fi
+
+    echo ""
+    echo "+--------------------------------+"
+    echo "| .::: ${BLUE}${BOLD}${BLINK}Code Coverage Review${RESET} :::. |"
+    echo "+--------------------------------+"
+    echo "| => ${PURPLE}Threshold target: ${UNDERLINE}${BOLD}$coverage %${RESET}   <= |"
 
     totalCoverage=`go tool cover -func=$file_name | grep total | grep -Eo '[0-9]+\.[0-9]+'`
 
-    echo "Current coverage: $totalCoverage %"
     if (( $(echo "$totalCoverage $coverage" | awk '{print ($1 > $2)}') )); then
-        echo "OK"
+        echo "| => ${GREEN}Current coverage: ${UNDERLINE}${BOLD}$totalCoverage %${RESET} <= |"
+        echo "+--------------------------------+"
+        echo ""
+        echo "${GREEN}Sufficient coverage.${RESET}"
     else
-        echo "Current test coverage is below threshold. Please add more unit tests."
-        echo "Failed"
+        echo "| => ${CYAN}Current coverage: ${UNDERLINE}${BOLD}$totalCoverage %${RESET} <= |"
+        echo "+--------------------------------+"
+        echo ""
+        echo "${YELLOW}Current test coverage is below threshold. ${UNDERLINE}Please add more unit tests.${RESET}"
+        echo "${RED}Failed${RESET}"
     fi
 
     rm -r $file_name
