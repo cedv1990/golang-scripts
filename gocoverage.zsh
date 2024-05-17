@@ -55,7 +55,7 @@ function gocoverage() {
 
     echo ""
     echo "+--------------------------------+"
-    echo "| .::: ${BLUE}${BOLD}${BLINK}Code Coverage Review${RESET} :::. |"
+    echo "| .::: ${BLUE}${BOLD}Code Coverage Review${RESET} :::. |"
     echo "+--------------------------------+"
     echo "| => ${PURPLE}Threshold target: ${UNDERLINE}${BOLD}$coverage %${RESET}   <= |"
 
