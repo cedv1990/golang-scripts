@@ -7,9 +7,14 @@
 # 4. Restart the terminal or execute the command: source ~/.zshrc
 # 5. To use it, execute: gocoverage
 # 5.1. To use a different coverage percentage as a parameter: gocoverage -c 80
+# 5.2. To exclude folders, pass a file name as a parameter: gocoverage -e excluded_dirs.txt
+        # excluded_dirs.txt context example
+        # internal/domains/...
+        # internal/utils/...
 
 function gocoverage() {
     local coverage=80
+    local exclude=""
 
     local RED='\033[0;31m'
     local YELLOW='\033[0;33m'
@@ -45,12 +50,22 @@ function gocoverage() {
 
     file_name="coverage_${current_date}.out"
 
-    if ! go test -cover -coverprofile $file_name -race -count=1 ./...; then
-        echo "${RED}There are errors in the tests and coverage could not be evaluated. Fix the tests and try again."
+    if [ -z "$exclude" ]; then
+        if ! go test -cover -coverprofile $file_name -race -count=1 ./...; then
+            echo "${RED}There are errors in the tests and coverage could not be evaluated. Fix the tests and try again."
 
-        rm -r $file_name
+            rm -r $file_name
 
-        return 1
+            return 1
+        fi
+    else 
+        if ! go test -cover -coverprofile $file_name -race -count=1 $(go list ./... | grep -Ev "(${exclude%|})"); then
+            echo "${RED}There are errors in the tests and coverage could not be evaluated. Fix the tests and try again."
+
+            rm -r $file_name
+
+            return 1
+        fi
     fi
 
     echo ""
