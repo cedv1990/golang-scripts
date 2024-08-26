@@ -8,7 +8,7 @@
 # 5. To use it, execute: gocoverage
 # 5.1. To use a different coverage percentage as a parameter: gocoverage -c 80
 # 5.2. To exclude folders, pass a file name as a parameter: gocoverage -e excluded_dirs.txt
-        # excluded_dirs.txt context example
+        # excluded_dirs.txt content example:
         # internal/domains/...
         # internal/utils/...
 
