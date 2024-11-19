@@ -28,7 +28,7 @@ function gocoverage() {
     local RESET='\033[0m'
 
     # Parsear los argumentos de la línea de comandos
-    while getopts ":c:" opt; do
+    while getopts ":c:e:" opt; do
         case $opt in
             c)
                 if [[ "$OPTARG" =~ ^[0-9]+$ ]]; then
@@ -37,6 +37,9 @@ function gocoverage() {
                     echo "The -c argument must be an integer." >&2
                     return 1
                 fi
+                ;;
+            e)
+                exclude=$(cat $OPTARG | tr '\n' '|')
                 ;;
             \?)
                 echo "Invalid option: -$OPTARG" >&2
@@ -70,7 +73,7 @@ function gocoverage() {
 
     echo ""
     echo "+--------------------------------+"
-    echo "| .::: ${BLUE}${BOLD}Code Coverage Review${RESET} :::. |"
+    echo "| .::: ${BLUE}${BOLD}${BLINK}Code Coverage Review${RESET} :::. |"
     echo "+--------------------------------+"
     echo "| => ${PURPLE}Threshold target: ${UNDERLINE}${BOLD}$coverage %${RESET}   <= |"
 
